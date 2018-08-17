@@ -2,49 +2,44 @@ import React, { PureComponent } from 'react'
 
 export default class UploadFile extends PureComponent {
     state = {
-        name: '',
+        
         path: '',
         preview: null,
         data: null
     }
 
-    changeName = (e) => {
-        this.setState({ name: e.target.value })
-    }
+   
 
     //选择文件
     changePath = (e) => {
         const file = e.target.files[0];
         if (!file) {
+            console.log('未选择文件');
             return;
-        }
+             }
 
         let src,preview,type=file.type;
-
+        
         // 匹配类型为image/开头的字符串
         if (/^image\/\S+$/.test(type)) {
             src = URL.createObjectURL(file)
             preview = <img src={src} alt='' />
-        }
-        // 匹配类型为video/开头的字符串
-        else if (/^video\/\S+$/.test(type)) {
-            src = URL.createObjectURL(file)
-            preview = <video src={src} autoPlay loop controls />
+        
         }
         // 匹配类型为text/开头的字符串
-        else if (/^text\/\S+$/.test(type)) {
+       else if (/^text\/\S+$/.test(type)) {
             const self = this;
             const reader = new FileReader();
             reader.readAsText(file);
             //注：onload是异步函数，此处需独立处理
             reader.onload = function (e) {
                 preview = <textarea value={this.result} readOnly></textarea>
-                self.setState({ path: file.name, data: file, preview: preview })
+                self.setState({ data: file, preview: preview })
             }
             return;
         } 
 
-        this.setState({ path: file.name, data: file, preview: preview })
+        this.setState({ data: file, preview: preview })
     }
 
     // 上传文件
@@ -71,27 +66,23 @@ export default class UploadFile extends PureComponent {
         })
     }
 
-    //关闭模态框
-    cancel = () => {
-        this.props.closeOverlay();
-    }
+   
 
     render() {
-        const { name, path, preview } = this.state;
+        const { preview } = this.state;
         return (
           <div>
                 <div className='row'>
                     
                     <div className='row-input'>
-                        <span>{path ? path : '請選擇圖片'}</span>
-                        <input type='file' accept='video/*,image/*,text/plain' onChange={this.changePath} />
+                       
+                    <input type='file' accept='image/*' onChange={this.changePath} />
                     </div>
                 </div>
                 <div className='media'>
-                    {preview}
+                   {preview}
                 </div>
-                <button className='primary upload' onClick={this.upload}>確認</button>
-                <button className='primary cancel' onClick={this.cancel}>取消</button>
+                                
             </div>
         )
     }
